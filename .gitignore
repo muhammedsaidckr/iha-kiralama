@@ -1,0 +1,7 @@
+/env
+/images
+/dronerental/rentalservice/migrations/
+/media/images
+/db.sqlite3
+/dronerental/rentalservice/tests.py.bak
+/.idea

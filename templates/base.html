@@ -2,11 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.4/dist/tailwind.min.css" rel="stylesheet">
+    <title>İHA Kiralama | {% block title %}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    {% block admin_css %}{% endblock %}
+    {% block admin_js %}{% endblock %}
+    <style>
+        [x-cloak] { display: none !important; }
+
+    </style>
 </head>
 <body>
-    {% block content %}{% endblock %}
+{% block content %}{% endblock %}
+<script src="//unpkg.com/alpinejs" defer></script>
 </body>
 </html>

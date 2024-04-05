@@ -29,16 +29,18 @@ class RentalTransactionTests(TestCase):
 
     def test_rental_transaction_creation(self):
         # Rental Transaction oluştur
-        start_time = timezone.now()
-        end_time = start_time + timedelta(hours=2)
+        start_date = timezone.now()
+        end_date = start_date + timedelta(hours=2)
         rental = RentalTransaction.objects.create(
             uav=self.uav,
             user=self.user,
-            start_time=start_time,
-            end_time=end_time,
+            start_date=start_date,
+            end_date=end_date,
         )
 
         # Doğrulamalar
         self.assertEqual(rental.uav, self.uav)
         self.assertEqual(rental.user, self.user)
         self.assertAlmostEqual(rental.total_cost, 200, places=2)
+
+

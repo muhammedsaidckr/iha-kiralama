@@ -2,6 +2,8 @@ from decimal import Decimal
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from rest_framework import serializers
 
 
 # Create your models here.
@@ -66,15 +68,27 @@ class UAV(BaseModel):
 class RentalTransaction(models.Model):
     uav = models.ForeignKey(UAV, on_delete=models.CASCADE, related_name='rentals')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='rentals')
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
     total_cost = models.DecimalField(max_digits=6, decimal_places=2, blank=True)
 
     def save(self, *args, **kwargs):
-        duration_hours = (self.end_time - self.start_time).total_seconds() / 3600
+        # UAV'nin istenen tarih aralığında kullanılabilir olup olmadığını kontrol et
+        overlapping_transactions = RentalTransaction.objects.filter(
+            uav=self.uav,
+            start_date__lt=self.end_date,
+            end_date__gt=self.start_date
+        ).exclude(pk=self.pk)  # Mevcut nesneyi dışarıda tut
+
+        if overlapping_transactions:
+            raise serializers.ValidationError({
+                'non_field_errors': ['A rental transaction for the selected UAV already exists within the given date range.']
+            })
+        # İki tarih arasındaki saat farkını hesapla
+        duration_hours = (self.end_date - self.start_date).total_seconds() / 3600
         # Float tipindeki duration_hours'ı Decimal tipine çevir
         duration_hours_decimal = Decimal(str(duration_hours))
-        # Decimal çarpımını yap
+        # Decimal çarpımını yap ve total_cost alanına ata
         self.total_cost = duration_hours_decimal * self.uav.hourly_rate
         super().save(*args, **kwargs)
 

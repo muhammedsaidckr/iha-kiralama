@@ -1,0 +1,107 @@
+{% extends 'dronerental/rentalservice/admin/base_dashboard.html' %}
+{% load static %}
+{% block admin_title %} {{ uav.name }} için Kiralama İşlemi</h2>
+{% endblock %}
+{% block admin_js %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#rentalForm').on('submit', function (e) {
+                e.preventDefault();  // Formun normal submit işlemini engelle
+
+
+                var formData = $(this).serialize();  // Form verilerini serialize et
+                // Form verilerini göndermeden once start_date end_date arasında bir kontrol yap
+                // Örneğin start_date < end_date olmalı
+                // Bu kontrolü yapmak için form verilerini al ve karşılaştır
+                var start_date = new Date($('#start_date').val());
+                var end_date = new Date($('#end_date').val());
+                if (start_date >= end_date) {
+                    // Eğer start_date >= end_date ise hata mesajı göster
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hata!',
+                        text: 'Başlangıç tarihi, teslim tarihinden büyük veya eşit olamaz.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    return;
+                }
+
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/uavs/rent/' + {{ uav.id }} + '/',  // Form verilerinin gönderileceği URL
+                    data: formData,
+                    success: function (response) {
+                        // Başarılı form gönderimi sonrası işlemler
+                        console.log('Form başarıyla gönderildi.', response);
+
+                        // Toast bildirim gösterme
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Başarılı!',
+                            text: 'Kiralama işlemi başarıyla gerçekleştirildi.',
+                            showConfirmButton: false,
+                            timer: 5000
+                        });
+                        clean = document.getElementById('rentalForm').reset();
+                        // İsteğe bağlı olarak kullanıcıyı başka bir sayfaya yönlendirme veya bildirim gösterme
+                    },
+                    error: function (error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hata!',
+                            text: error.responseJSON['non_field_errors'][0],
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                        console.log('Form gönderimi sırasında bir hata oluştu.', error);
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
+{% block admin_content %}
+    <div class="space-y-10 divide-y divide-gray-900/10">
+        <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3">
+            <div class="px-4 sm:px-0">
+                <h2 class="text-base font-semibold leading-7 text-gray-900">İHA Kiralama</h2>
+            </div>
+
+            <form id="rentalForm" class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
+                {% csrf_token %}
+                <div class="px-4 py-6 sm:p-8">
+                    <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                        <div class="sm:col-span-4">
+                            <label for="start_date" class="block text-sm font-medium leading-6 text-gray-900">Başlangıç
+                                Tarihi</label>
+                            <div class="mt-2">
+                                <input id="start-date" name="start_date" type="datetime-local"
+                                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div class="sm:col-span-4">
+                            <label for="start_date" class="block text-sm font-medium leading-6 text-gray-900">Teslim
+                                Tarihi</label>
+                            <div class="mt-2">
+                                <input id="end-date" name="end_date" type="datetime-local"
+                                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+                    <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
+                    <button type="submit"
+                            class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

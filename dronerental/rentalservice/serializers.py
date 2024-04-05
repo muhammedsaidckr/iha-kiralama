@@ -35,6 +35,9 @@ class BrandSerializer(serializers.ModelSerializer):
 
 
 class UAVSerializer(serializers.ModelSerializer):
+    category = CategorySerializer()
+    brand = BrandSerializer()
+
     class Meta:
         model = UAV
         fields = '__all__'
@@ -44,6 +47,14 @@ class UAVSerializer(serializers.ModelSerializer):
 
 
 class RentalTransactionSerializer(serializers.ModelSerializer):
+    start_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
+    end_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
+    uav = UAVSerializer()
+    username = serializers.SerializerMethodField()
+
     class Meta:
         model = RentalTransaction
         fields = '__all__'
+
+    def get_username(self, obj):
+        return obj.user.username

@@ -1,0 +1,46 @@
+{% extends 'dronerental/rentalservice/admin/base_dashboard.html' %}
+{% load static %}
+{% block admin_css %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.3/css/dataTables.tailwindcss.css">
+{% endblock %}
+{% block admin_js %}
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/2.0.3/js/dataTables.tailwindcss.js"></script>
+{% endblock %}
+{% block admin_title %} İHA Kiralamalarım {% endblock %}
+{% block admin_content %}
+    <table id="rentalTable" class="display" style="width:100%">
+    <thead>
+        <tr>
+            <th>İHA ID</th>
+            <th>Başlangıç Tarihi</th>
+            <th>Bitiş Tarihi</th>
+            <th>Toplam Ücret</th>
+            <th>İHA</th>
+            <th>Kullanıcı</th>
+        </tr>
+    </thead>
+</table>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#rentalTable').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url":"/api/rentaltransactions/",
+            "dataSrc": "data"
+        },
+        "columns": [
+            { "data": "id" },
+            { "data": "start_date" },
+            { "data": "end_date" },
+            { "data": "total_cost" },
+            { "data": "uav.name" },
+            { "data": "username"}
+        ]
+    });
+});
+</script>
+{% endblock %}

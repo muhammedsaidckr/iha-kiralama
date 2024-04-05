@@ -31,38 +31,37 @@ class RentalTransactionAPITests(APITestCase):
         self.rental_transaction = RentalTransaction.objects.create(
             uav=self.uav,
             user=self.user,
-            start_time=datetime.now(),
-            end_time=datetime.now() + timedelta(hours=2),
+            start_date=datetime.now(),
+            end_date=datetime.now() + timedelta(hours=2),
         )
 
     def test_create_rental_transaction(self):
-        url = reverse('rental-transactions')
+        url = reverse('rentaltransaction-list')
         data = {
             'uav': self.uav.id,
             'user': self.user.id,
-            'start_time': '2021-07-01T12:00:00Z',
-            'end_time': '2021-07-01T14:00:00Z',
+            'start_date': '2021-07-01T12:00:00Z',
+            'end_date': '2021-07-01T14:00:00Z',
         }
         response = self.client.post(url, data, format='json')
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_get_rental_transaction(self):
-        url = reverse('rental-transactions')
+        url = reverse('rentaltransaction-detail', args=[self.rental_transaction.id])
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_update_rental_transaction(self):
         transaction_to_update = RentalTransaction.objects.first()
-        url = reverse('rental-detail', args=[transaction_to_update.pk])
+        url = reverse('rentaltransaction-detail', args=[transaction_to_update.pk])
         updated_data = {
             'uav': transaction_to_update.uav.pk,
             'user': transaction_to_update.user.pk,
-            'start_time': transaction_to_update.start_time,
-            'end_time': transaction_to_update.end_time + timedelta(hours=1),
+            'start_date': transaction_to_update.start_date,
+            'end_date': transaction_to_update.end_date + timedelta(hours=1),
         }
         response = self.client.put(url, updated_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Verify that the transaction was updated
         transaction_to_update.refresh_from_db()
-        self.assertEqual(transaction_to_update.end_time, updated_data['end_time'])
+        self.assertEqual(transaction_to_update.end_date, updated_data['end_date'])

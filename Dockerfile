@@ -12,7 +12,7 @@ RUN pip install --upgrade pip
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
-# create static directory
-RUN python manage.py collectstatic
-
 COPY . .
+
+RUN python manage.py collectstatic --noinput
+

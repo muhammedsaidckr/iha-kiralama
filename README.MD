@@ -29,6 +29,11 @@ git clone git@github.com:muhammedsaidckr/iha-kiralama.git
 cd iha-kiralama
 ```
 
+3. Env dosyasını oluşturun
+```bash
+cp .env.example .env
+```
+
 ## Docker ile
 1. Docker Compose ile projeyi başlatın
 ```bash

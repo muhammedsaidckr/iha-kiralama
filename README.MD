@@ -42,12 +42,14 @@ docker-compose up --build
 
 2. Superuser oluşturun
 ```bash
-docker exec dronerental-web python manage.py createsuperuser
+docker exec -it iha-kiralama-web-1 sh
 ```
-
+```
+python manage.py createsuperuser
+```
 3. Testleri çalıştırın
 ```bash
-docker exec dronerental-web python manage.py test
+docker exec iha-kiralama-web-1 python manage.py test
 ```
 
 ## Proje Kurulumu Manuel

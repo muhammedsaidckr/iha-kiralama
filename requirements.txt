@@ -1,0 +1,12 @@
+Django
+django-filter
+djangorestframework
+drf-yasg
+psycopg2
+psycopg2-binary
+Pillow
+pytest
+pytest-django
+python-dotenv
+django-widget-tweaks
+django-adminlte3
